@@ -1,48 +1,41 @@
 package ru.sibdigital.egrul.model;
 
-import javax.persistence.*;
-import java.util.Objects;
-import java.util.UUID;
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "reg_egrul_okved", schema = "public")
 public class RegEgrulOkved {
 
-    @OneToOne
-    @JoinColumn(name = "id_egrul", referencedColumnName = "id")
-    private RegEgrul regEgrul;
+    @EmbeddedId
+    private RegEgrulOkvedId regEgrulOkvedId;
+    @Column(name = "is_main")
+    private Boolean isMain;
 
-    @OneToOne
-    @JoinColumn(name = "id_okved", referencedColumnName = "id")
-    private Okved okved;
+    public RegEgrulOkved() {
 
-    public RegEgrul getRegEgrul() {
-        return regEgrul;
     }
 
-    public void setRegEgrul(RegEgrul regEgrul) {
-        this.regEgrul = regEgrul;
+    public RegEgrulOkved(RegEgrulOkvedId regEgrulOkvedId, Boolean isMain) {
+        this.regEgrulOkvedId = regEgrulOkvedId;
+        this.isMain = isMain;
     }
 
-    public Okved getOkved() {
-        return okved;
+    public RegEgrulOkvedId getRegEgrulOkvedId() {
+        return regEgrulOkvedId;
     }
 
-    public void setOkved(Okved okved) {
-        this.okved = okved;
+    public void setRegEgrulOkvedId(RegEgrulOkvedId regEgrulOkvedId) {
+        this.regEgrulOkvedId = regEgrulOkvedId;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RegEgrulOkved that = (RegEgrulOkved) o;
-        return regEgrul.equals(that.regEgrul) &&
-                okved.equals(that.okved);
+    public Boolean getMain() {
+        return isMain;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(regEgrul, okved);
+    public void setMain(Boolean main) {
+        isMain = main;
     }
 }

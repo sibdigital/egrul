@@ -1,6 +1,7 @@
 package ru.sibdigital.egrul.model;
 
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -8,23 +9,45 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "okved", schema = "public")
+@TypeDef(name = "Ltree", typeClass = Ltree.class)
 public class Okved {
-
-    private UUID id;
-    private String classCode;
-    private String subclassCode;
-    private String groupCode;
-    private String subgroupCode;
-    private String kindCode;
-    private Short typeCode;
-    private String path;
-    private Short status;
-    private String kindName;
-    private String description;
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+    @Basic
+    @Column(name = "class_code")
+    private String classCode;
+    @Basic
+    @Column(name = "subclass_code")
+    private String subclassCode;
+    @Basic
+    @Column(name = "group_code")
+    private String groupCode;
+    @Basic
+    @Column(name = "subgroup_code")
+    private String subgroupCode;
+    @Basic
+    @Column(name = "kind_code")
+    private String kindCode;
+    @Basic
+    @Column(name = "type_code")
+    private Short typeCode;
+    @Basic
+    @Column(name = "path", columnDefinition = "ltree")
+    @Type(type = "Ltree")
+    private String path;
+    @Basic
+    @Column(name = "status")
+    private Short status;
+    @Basic
+    @Column(name = "kind_name")
+    private String kindName;
+    @Basic
+    @Column(name = "description")
+    private String description;
+
     public UUID getId() {
         return id;
     }
@@ -33,8 +56,6 @@ public class Okved {
         this.id = id;
     }
 
-    @Basic
-    @Column(name = "class_code")
     public String getClassCode() {
         return classCode;
     }
@@ -43,8 +64,6 @@ public class Okved {
         this.classCode = classCode;
     }
 
-    @Basic
-    @Column(name = "subclass_code")
     public String getSubclassCode() {
         return subclassCode;
     }
@@ -53,8 +72,6 @@ public class Okved {
         this.subclassCode = subclassCode;
     }
 
-    @Basic
-    @Column(name = "group_code")
     public String getGroupCode() {
         return groupCode;
     }
@@ -63,8 +80,6 @@ public class Okved {
         this.groupCode = groupCode;
     }
 
-    @Basic
-    @Column(name = "subgroup_code")
     public String getSubgroupCode() {
         return subgroupCode;
     }
@@ -73,8 +88,6 @@ public class Okved {
         this.subgroupCode = subgroupCode;
     }
 
-    @Basic
-    @Column(name = "kind_code")
     public String getKindCode() {
         return kindCode;
     }
@@ -83,8 +96,6 @@ public class Okved {
         this.kindCode = kindCode;
     }
 
-    @Basic
-    @Column(name = "type_code")
     public Short getTypeCode() {
         return typeCode;
     }
@@ -93,9 +104,6 @@ public class Okved {
         this.typeCode = typeCode;
     }
 
-    @Basic
-    @Column(name = "path", columnDefinition = "ltree")
-    @Type(type = "ru.sibdigital.okved.model.Ltree")
     public String getPath() {
         return path;
     }
@@ -104,8 +112,6 @@ public class Okved {
         this.path = path;
     }
 
-    @Basic
-    @Column(name = "status")
     public Short getStatus() {
         return status;
     }
@@ -114,8 +120,6 @@ public class Okved {
         this.status = status;
     }
 
-    @Basic
-    @Column(name = "kind_name")
     public String getKindName() {
         return kindName;
     }
@@ -124,8 +128,6 @@ public class Okved {
         this.kindName = kindName;
     }
 
-    @Basic
-    @Column(name = "description")
     public String getDescription() {
         return description;
     }

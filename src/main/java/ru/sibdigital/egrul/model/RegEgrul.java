@@ -1,23 +1,43 @@
 package ru.sibdigital.egrul.model;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Table(name = "reg_egrul", schema = "public")
+@TypeDefs({
+        @TypeDef(name = "JsonbType", typeClass = Jsonb.class)
+})
 public class RegEgrul {
-
-    private UUID id;
-    private Timestamp loadDate;
-    private String inn;
-    private String data;
-    private String filePath;
 
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+    @Basic
+    @Column(name = "load_date", nullable = true)
+    private Timestamp loadDate;
+    @Basic
+    @Column(name = "inn", nullable = true, length = 20)
+    private String inn;
+    @Basic
+    @Column(name = "data", nullable = true, columnDefinition = "jsonb")
+    @Type(type = "JsonbType")
+    private String data;
+    @Basic
+    @Column(name = "file_path", nullable = true)
+    private String filePath;
+
+    @OneToMany(mappedBy = "regEgrulOkvedId.regEgrul")
+    private Set<RegEgrulOkved> regEgrulOkveds;
+
     public UUID getId() {
         return id;
     }
@@ -26,8 +46,6 @@ public class RegEgrul {
         this.id = id;
     }
 
-    @Basic
-    @Column(name = "load_date", nullable = true)
     public Timestamp getLoadDate() {
         return loadDate;
     }
@@ -36,8 +54,6 @@ public class RegEgrul {
         this.loadDate = loadDate;
     }
 
-    @Basic
-    @Column(name = "inn", nullable = true, length = 20)
     public String getInn() {
         return inn;
     }
@@ -46,8 +62,6 @@ public class RegEgrul {
         this.inn = inn;
     }
 
-    @Basic
-    @Column(name = "data", nullable = true)
     public String getData() {
         return data;
     }
@@ -56,14 +70,20 @@ public class RegEgrul {
         this.data = data;
     }
 
-    @Basic
-    @Column(name = "file_path", nullable = true)
     public String getFilePath() {
         return filePath;
     }
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public Set<RegEgrulOkved> getRegEgrulOkveds() {
+        return regEgrulOkveds;
+    }
+
+    public void setRegEgrulOkveds(Set<RegEgrulOkved> regEgrulOkveds) {
+        this.regEgrulOkveds = regEgrulOkveds;
     }
 
     @Override

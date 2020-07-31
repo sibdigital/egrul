@@ -36,7 +36,9 @@ create table if not exists reg_egrul
     file_path varchar(255)
 );
 
-create table reg_egrip
+create index if not exists reg_egrul_inn_idx on reg_egrul (inn);
+
+create table if not exists reg_egrip
 (
     id uuid not null
         constraint reg_egrip_pk
@@ -47,22 +49,28 @@ create table reg_egrip
     file_path varchar(255)
 );
 
-create table reg_egrul_okved
+create index if not exists reg_egrip_inn_idx on reg_egrip (inn);
+
+create table if not exists reg_egrul_okved
 (
     id_egrul uuid
         constraint reg_egrul_okved_reg_egrul_id_fk
             references reg_egrul,
     id_okved uuid
         constraint okved_reg_egrul_id_fk
-            references okved
+            references okved,
+    is_main bool default false,
+    primary key(id_egrul, id_okved)
 );
 
-create table reg_egrip_okved
+create table if not exists reg_egrip_okved
 (
     id_egrip uuid
         constraint reg_egril_okved_reg_egril_id_fk
             references reg_egrip,
     id_okved uuid
         constraint okved_reg_egrip_id_fk
-            references okved
+            references okved,
+    is_main bool default false,
+    primary key(id_egrip, id_okved)
 )

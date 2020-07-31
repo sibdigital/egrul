@@ -1,23 +1,40 @@
 package ru.sibdigital.egrul.model;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Table(name = "reg_egrip", schema = "public")
+@TypeDef(name = "Jsonb", typeClass = Jsonb.class)
 public class RegEgrip {
-
-    private UUID id;
-    private Timestamp loadDate;
-    private String inn;
-    private String data;
-    private String filePath;
 
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+    @Basic
+    @Column(name = "load_date", nullable = true)
+    private Timestamp loadDate;
+    @Basic
+    @Column(name = "inn", nullable = true, length = 20)
+    private String inn;
+    @Basic
+    @Column(name = "data", nullable = true, columnDefinition = "jsonb")
+    @Type(type = "Jsonb")
+    private String data;
+    @Basic
+    @Column(name = "file_path", nullable = true)
+    private String filePath;
+
+    @OneToMany(mappedBy = "regEgripOkvedId.regEgrip")
+    private Set<RegEgripOkved> regEgripOkveds;
+
     public UUID getId() {
         return id;
     }
@@ -26,8 +43,6 @@ public class RegEgrip {
         this.id = id;
     }
 
-    @Basic
-    @Column(name = "load_date", nullable = true)
     public Timestamp getLoadDate() {
         return loadDate;
     }
@@ -36,8 +51,6 @@ public class RegEgrip {
         this.loadDate = loadDate;
     }
 
-    @Basic
-    @Column(name = "inn", nullable = true, length = 20)
     public String getInn() {
         return inn;
     }
@@ -46,8 +59,6 @@ public class RegEgrip {
         this.inn = inn;
     }
 
-    @Basic
-    @Column(name = "data", nullable = true)
     public String getData() {
         return data;
     }
@@ -56,14 +67,20 @@ public class RegEgrip {
         this.data = data;
     }
 
-    @Basic
-    @Column(name = "file_path", nullable = true)
     public String getFilePath() {
         return filePath;
     }
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public Set<RegEgripOkved> getRegEgripOkveds() {
+        return regEgripOkveds;
+    }
+
+    public void setRegEgripOkveds(Set<RegEgripOkved> regEgripOkveds) {
+        this.regEgripOkveds = regEgripOkveds;
     }
 
     @Override
