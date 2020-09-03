@@ -66,7 +66,7 @@ create table if not exists reg_egrul_okved
 create table if not exists reg_egrip_okved
 (
     id_egrip uuid
-        constraint reg_egril_okved_reg_egril_id_fk
+        constraint reg_egrip_okved_reg_egrip_id_fk
             references reg_egrip,
     id_okved uuid
         constraint okved_reg_egrip_id_fk
