@@ -19,12 +19,13 @@ public class MainController {
         if (inn == null || inn.isBlank()) {
             return null;
         }
-        return egrulService.getEgrul(inn);
+        return egrulService.getEgrul(inn); //TODO переделать,чтобы возвращался не пустойответ, а обертка
     }
 
     @CrossOrigin
     @GetMapping("/egrip")
     public String getEgrip(@RequestParam(name = "inn") String inn) {
-        return egrulService.getEgrip(inn);
+        //TODO сделать единообразно с /egrul
+        return egrulService.getEgrip(inn); //TODO переделать,чтобы возвращался не пустойответ, а обертка
     }
 }
