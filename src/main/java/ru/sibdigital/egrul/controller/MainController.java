@@ -25,7 +25,9 @@ public class MainController {
     @CrossOrigin
     @GetMapping("/egrip")
     public String getEgrip(@RequestParam(name = "inn") String inn) {
-        //TODO сделать единообразно с /egrul
+        if (inn == null || inn.isBlank()) {
+            return null;
+        }
         return egrulService.getEgrip(inn); //TODO переделать,чтобы возвращался не пустойответ, а обертка
     }
 }
