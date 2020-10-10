@@ -62,30 +62,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>2.5.0</version>
-                <executions>
-                    <execution>
-                        <id>xjc</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <!-- The package of your generated sources -->
-                    <packageName>ru.sibdigital.egrul.dto.egrip</packageName>
-<!--                    <packageName>ru.sibdigital.egrul.dto.egrul</packageName>-->
-                    <sources>
-                        <source>xsds/VO_RIGF_2_311_27_04_04_01.xsd</source>
-<!--                        <source>xsds/VO_RUGF_2_311_26_04_05_01.xsd</source>-->
-                    </sources>
-                    <encoding>UTF-8</encoding>
-<!--                    <laxSchemaValidation>true</laxSchemaValidation>-->
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
