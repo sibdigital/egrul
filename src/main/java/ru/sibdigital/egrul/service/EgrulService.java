@@ -1,8 +1,11 @@
 package ru.sibdigital.egrul.service;
 
+import ru.sibdigital.egrul.model.RegEgrip;
+import ru.sibdigital.egrul.model.RegEgrul;
+
 public interface EgrulService {
 
-    String getEgrul(String inn);
+    RegEgrul getEgrul(String inn);
 
-    String getEgrip(String inn);
+    RegEgrip getEgrip(String inn);
 }

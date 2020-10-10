@@ -16,19 +16,19 @@ public class EgrulServiceImpl implements EgrulService {
     @Autowired
     private RegEgripRepo regEgripRepo;
 
-    public String getEgrul(String inn) {
-        RegEgrul regEgrul = regEgrulRepo.findByInn(inn);
-        if (regEgrul == null) {
+    public RegEgrul getEgrul(String inn) {
+        if (inn == null || inn.isBlank()) {
             return null;
         }
-        return regEgrul.getData();
+        RegEgrul regEgrul = regEgrulRepo.findByInn(inn);
+        return regEgrul;
     }
 
-    public String getEgrip(String inn) {
-        RegEgrip regEgrip = regEgripRepo.findByInn(inn);
-        if (regEgrip == null) {
+    public RegEgrip getEgrip(String inn) {
+        if (inn == null || inn.isBlank()) {
             return null;
         }
-        return regEgrip.getData();
+        RegEgrip regEgrip = regEgripRepo.findByInn(inn);
+        return regEgrip;
     }
 }
