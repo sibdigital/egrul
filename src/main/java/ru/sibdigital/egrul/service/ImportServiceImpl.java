@@ -81,21 +81,102 @@ public class ImportServiceImpl implements ImportService {
 
         if (zipFiles != null && !zipFiles.isEmpty()) {
             for (File zipFile : zipFiles) {
-                Collection<EGRUL> egruls = getEgrulData(zipFile);
-                if (egruls != null && !egruls.isEmpty()) {
-                    try {
-                        saveEgrulDatas(egruls, zipFile.getPath());
-                    } catch (Exception e) {
-                        egrulLogger.info("Не удалось сохранить данные файла " + zipFile.getName());
-                        e.printStackTrace();
-                    }
-                }
+                processEgrulFile(zipFile);
             }
         } else {
             egrulLogger.info("Zip-файлы не найдены по пути " + egrulPath);
         }
 
         egrulLogger.info("Импорт ЕГРЮЛ окончен");
+    }
+
+    private void processEgrulFile(File file) {
+        egrulLogger.info("Обработка файла " + file.getName());
+
+        ZipFile zipFile = getZipFile(file);
+        if (zipFile != null) {
+            Unmarshaller unmarshaller = getUnmarshaller(EGRUL.class);
+            if (unmarshaller != null) {
+                try {
+                    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                    while (entries.hasMoreElements()) {
+                        ZipEntry zipEntry = entries.nextElement();
+                        InputStream is = zipFile.getInputStream(zipEntry);
+                        EGRUL egrul = (EGRUL) unmarshaller.unmarshal(is);
+                        saveEgrulData(egrul, file.getPath());
+                    }
+                } catch (IOException e) {
+                    egrulLogger.info("Не удалось прочитать xml-файл из zip-файла");
+                    e.printStackTrace();
+                } catch (JAXBException e) {
+                    egrulLogger.info("Не удалось демаршализовать xml-файл из zip-файла");
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        zipFile.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                egrulLogger.info("Не удалось создать демаршаллизатор");
+            }
+        } else {
+            egrulLogger.info("Не удалось прочитать zip-файл");
+        }
+
+    }
+
+    private void saveEgrulData(EGRUL egrul, String filePath) {
+        for (EGRUL.СвЮЛ свЮЛ : egrul.getСвЮЛ()) {
+
+            RegEgrul newRegEgrul = new RegEgrul();
+            newRegEgrul.setLoadDate(new Timestamp(System.currentTimeMillis()));
+            newRegEgrul.setInn(свЮЛ.getИНН());
+            try {
+                newRegEgrul.setData(mapper.writeValueAsString(свЮЛ));
+            } catch (JsonProcessingException e) {
+                egrulLogger.info("Не удалось преобразовать данные к JSON для ИНН " + свЮЛ.getИНН());
+                e.printStackTrace();
+            }
+            newRegEgrul.setFilePath(filePath);
+
+            RegEgrul regEgrul = regEgrulRepo.findByInn(свЮЛ.getИНН());
+            if (regEgrul != null) {
+                newRegEgrul.setId(regEgrul.getId());
+                regEgrulOkvedRepo.deleteRegEgrulOkved(regEgrul.getId());
+            }
+
+            regEgrulRepo.save(newRegEgrul);
+
+            EGRUL.СвЮЛ.СвОКВЭД свОКВЭД = свЮЛ.getСвОКВЭД();
+            if (свОКВЭД != null) {
+                Set<RegEgrulOkved> regEgrulOkveds = new HashSet<>();
+
+                Okved okved = okvedRepo.findByKindCodeAndVersion(свОКВЭД.getСвОКВЭДОсн().getКодОКВЭД(), свОКВЭД.getСвОКВЭДОсн().getПрВерсОКВЭД() != null ? свОКВЭД.getСвОКВЭДОсн().getПрВерсОКВЭД() : "2001");
+                if (okved != null) {
+                    RegEgrulOkvedId regEgrulOkvedId = new RegEgrulOkvedId(newRegEgrul, okved);
+                    regEgrulOkveds.add(new RegEgrulOkved(regEgrulOkvedId, true));
+                } else {
+                    egrulLogger.info("ОКВЭД" + свОКВЭД.getСвОКВЭДОсн().getКодОКВЭД() + " не найден для ИНН " + свЮЛ.getИНН());
+                }
+                if (свОКВЭД.getСвОКВЭДДоп() != null) {
+                    for (СвОКВЭДТип свОКВЭДТип : свОКВЭД.getСвОКВЭДДоп()) {
+                        String version = свОКВЭДТип.getПрВерсОКВЭД() != null ? свОКВЭДТип.getПрВерсОКВЭД() : "2001";
+                        okved = okvedRepo.findByKindCodeAndVersion(свОКВЭДТип.getКодОКВЭД(), version);
+                        if (okved != null) {
+                            RegEgrulOkvedId regEgrulOkvedId = new RegEgrulOkvedId(newRegEgrul, okved);
+                            regEgrulOkveds.add(new RegEgrulOkved(regEgrulOkvedId, false));
+                        } else {
+                            egrulLogger.info("ОКВЭД" + свОКВЭДТип.getКодОКВЭД() + " не найден для ИНН " + свЮЛ.getИНН());
+                        }
+                    }
+
+                }
+
+                regEgrulOkvedRepo.saveAll(regEgrulOkveds);
+            }
+        }
     }
 
     private void saveEgrulDatas(Collection<EGRUL> egruls, String filePath) {
@@ -234,21 +315,101 @@ public class ImportServiceImpl implements ImportService {
 
         if (zipFiles != null && !zipFiles.isEmpty()) {
             for (File zipFile : zipFiles) {
-                Collection<EGRIP> egrips = getEgripData(zipFile);
-                if (egrips != null && !egrips.isEmpty()) {
-                    try {
-                        saveEgripDatas(egrips, zipFile.getPath());
-                    } catch (Exception e) {
-                        egripLogger.info("Не удалось сохранить данные файла " + zipFile.getName());
-                        e.printStackTrace();
-                    }
-                }
+                processEgripFile(zipFile);
             }
         } else {
             egripLogger.info("Zip-файлы не найдены по пути " + egripPath);
         }
 
         egripLogger.info("Импорт ЕГРИП окончен");
+    }
+
+    private void processEgripFile(File file) {
+        egrulLogger.info("Обработка файла " + file.getName());
+
+        ZipFile zipFile = getZipFile(file);
+        if (zipFile != null) {
+            Unmarshaller unmarshaller = getUnmarshaller(EGRIP.class);
+            if (unmarshaller != null) {
+                try {
+                    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                    while (entries.hasMoreElements()) {
+                        ZipEntry zipEntry = entries.nextElement();
+                        InputStream is = zipFile.getInputStream(zipEntry);
+                        EGRIP egrip = (EGRIP) unmarshaller.unmarshal(is);
+                        saveEgripData(egrip, file.getPath());
+                    }
+                } catch (IOException e) {
+                    egrulLogger.info("Не удалось прочитать xml-файл из zip-файла");
+                    e.printStackTrace();
+                } catch (JAXBException e) {
+                    egrulLogger.info("Не удалось демаршализовать xml-файл из zip-файла");
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        zipFile.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                egrulLogger.info("Не удалось создать демаршаллизатор");
+            }
+        } else {
+            egrulLogger.info("Не удалось прочитать zip-файл");
+        }
+
+    }
+
+    private void saveEgripData(EGRIP egrip, String filePath) {
+        for (EGRIP.СвИП свИП : egrip.getСвИП()) {
+
+            RegEgrip newRegEgrip = new RegEgrip();
+            newRegEgrip.setLoadDate(new Timestamp(System.currentTimeMillis()));
+            newRegEgrip.setInn(свИП.getИННФЛ());
+            try {
+                newRegEgrip.setData(mapper.writeValueAsString(свИП));
+            } catch (JsonProcessingException e) {
+                egripLogger.info("Не удалось преобразовать данные к JSON для ИНН " + свИП.getИННФЛ());
+                e.printStackTrace();
+            }
+            newRegEgrip.setFilePath(filePath);
+
+            RegEgrip regEgrip = regEgripRepo.findByInn(свИП.getИННФЛ());
+            if (regEgrip != null) {
+                newRegEgrip.setId(regEgrip.getId());
+                regEgripOkvedRepo.deleteRegEgripOkved(regEgrip.getId());
+            }
+
+            regEgripRepo.save(newRegEgrip);
+
+            EGRIP.СвИП.СвОКВЭД свОКВЭД = свИП.getСвОКВЭД();
+            if (свОКВЭД != null) {
+                Set<RegEgripOkved> regEgripOkveds = new HashSet<>();
+
+                Okved okved = okvedRepo.findByKindCodeAndVersion(свОКВЭД.getСвОКВЭДОсн().getКодОКВЭД(), свОКВЭД.getСвОКВЭДОсн().getПрВерсОКВЭД() != null ? свОКВЭД.getСвОКВЭДОсн().getПрВерсОКВЭД() : "2001");
+                if (okved != null) {
+                    RegEgripOkvedId regEgripOkvedId = new RegEgripOkvedId(newRegEgrip, okved);
+                    regEgripOkveds.add(new RegEgripOkved(regEgripOkvedId, true));
+                } else {
+                    egripLogger.info("ОКВЭД не найден для ИНН " + свИП.getИННФЛ());
+                }
+                if (свОКВЭД.getСвОКВЭДДоп() != null) {
+                    for (ru.sibdigital.egrul.dto.egrip.СвОКВЭДТип свОКВЭДТип : свОКВЭД.getСвОКВЭДДоп()) {
+                        String version = свОКВЭДТип.getПрВерсОКВЭД() != null ? свОКВЭДТип.getПрВерсОКВЭД() : "2001";
+                        okved = okvedRepo.findByKindCodeAndVersion(свОКВЭДТип.getКодОКВЭД(), version);
+                        if (okved != null) {
+                            RegEgripOkvedId regEgrulOkvedId = new RegEgripOkvedId(newRegEgrip, okved);
+                            regEgripOkveds.add(new RegEgripOkved(regEgrulOkvedId, false));
+                        } else {
+                            egripLogger.info("ОКВЭД не найден для ИНН " + свИП.getИННФЛ());
+                        }
+                    }
+                }
+
+                regEgripOkvedRepo.saveAll(regEgripOkveds);
+            }
+        }
     }
 
     private void saveEgripDatas(Collection<EGRIP> egrips, String filePath) {
