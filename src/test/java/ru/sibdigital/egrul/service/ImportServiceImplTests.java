@@ -34,8 +34,8 @@ public class ImportServiceImplTests {
     @MockBean
     private RegEgripRepo regEgripRepo;
 
-    @Test
-    public void importData() {
-        importService.importData();
-    }
+//    @Test
+//    public void importData() {
+//        importService.importData();
+//    }
 }

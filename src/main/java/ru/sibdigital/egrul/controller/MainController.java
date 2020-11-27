@@ -2,10 +2,8 @@ package ru.sibdigital.egrul.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import ru.sibdigital.egrul.dto.EgripResponse;
 import ru.sibdigital.egrul.dto.EgrulResponse;
 import ru.sibdigital.egrul.dto.egrip.EGRIP;
@@ -51,4 +49,5 @@ public class MainController {
         }
         return response;
     }
+
 }
