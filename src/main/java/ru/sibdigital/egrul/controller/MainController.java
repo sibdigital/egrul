@@ -2,15 +2,17 @@ package ru.sibdigital.egrul.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.sibdigital.egrul.dto.EgripResponse;
 import ru.sibdigital.egrul.dto.EgrulResponse;
 import ru.sibdigital.egrul.dto.egrip.EGRIP;
 import ru.sibdigital.egrul.dto.egrul.EGRUL;
-import ru.sibdigital.egrul.model.RegEgrip;
-import ru.sibdigital.egrul.model.RegEgrul;
+import ru.sibdigital.egrul.model.*;
+import ru.sibdigital.egrul.repository.ClsMigrationRepo;
 import ru.sibdigital.egrul.service.EgrulService;
+
+import java.util.List;
 
 @RestController
 public class MainController {
@@ -19,6 +21,9 @@ public class MainController {
 
     @Autowired
     private EgrulService egrulService;
+
+    @Autowired
+    private ClsMigrationRepo clsMigrationRepo;
 
     @CrossOrigin
     @GetMapping("/egrul")
@@ -48,6 +53,11 @@ public class MainController {
             }
         }
         return response;
+    }
+
+    @GetMapping("/migration_data")
+    public List<ClsMigration> getMigrationData() {
+        return clsMigrationRepo.findAll(Sort.by("filename"));
     }
 
 }

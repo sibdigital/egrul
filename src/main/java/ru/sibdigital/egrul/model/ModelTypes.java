@@ -1,17 +1,17 @@
 package ru.sibdigital.egrul.model;
 
 public enum ModelTypes {
-    EGRUL_LOAD(0),
-    EGRIP_LOAD(1);
+    EGRUL_LOAD((short) 0),
+    EGRIP_LOAD((short) 1);
 
-    private final int value;
+    private final short value;
 
-    private ModelTypes(int value) {
+    private ModelTypes(short value) {
         this.value = value;
     }
 
 
-    public int getValue() {
+    public short getValue() {
         return value;
     }
 }

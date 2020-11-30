@@ -21,71 +21,20 @@ public class ImportController {
     @Autowired
     private ImportService importService;
 
-//    @GetMapping("/import")
-//    public ResponseEntity<String> importData() {
-//        importService.importData();
-//        return ResponseEntity.ok().body("Ok");
-//    }
-
     @GetMapping("/import")
-    public String import1() {
+    public String importData() {
         return "import";
     }
 
-
-    @GetMapping("/queue_up_all")
+    @GetMapping("/processFiles")
     public @ResponseBody
-    String queueUpEgrul(@RequestParam("time") String time) {
+    String processFiles() {
         try {
-            Date date = new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(time).getTime());
-            importService.addToScheduleAll(date);
+            importService.importData();
         } catch (Exception e) {
-//            log.error(e.getMessage(), e);
-            return "Не удалось задать расписание запуска";
+            return "Не удалось запустить загрузку";
         }
         return "Ok";
     }
-
-    @GetMapping("/queue_up_egrul")
-    public @ResponseBody
-    String queueUpEgrul(@RequestParam("loadVersion") Long loadVersion, @RequestParam("time") String time) {
-        try {
-            Date date = new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(time).getTime());
-            importService.addToSchedule(ModelTypes.EGRUL_LOAD, Integer.parseInt(""+loadVersion), date);
-        } catch (Exception e) {
-//            log.error(e.getMessage(), e);
-            return "Не удалось задать расписание запуска ЕГРЮЛа";
-        }
-        return "Ok";
-    }
-
-    @GetMapping("/queue_up_egrip")
-    public @ResponseBody
-    String queueUpEgrip(@RequestParam("loadVersion") Long loadVersion, @RequestParam("time") String time) {
-        try {
-            Date date = new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(time).getTime());
-            importService.addToSchedule(ModelTypes.EGRIP_LOAD, Integer.parseInt(""+loadVersion), date);
-        } catch (Exception e) {
-//            log.error(e.getMessage(), e);
-            return "Не удалось задать расписание запуска ЕГРИПа";
-        }
-        return "Ok";
-    }
-
-    @GetMapping("/delete_queue")
-    public @ResponseBody
-    String queueUpEgrip(@RequestParam("type") String type) {
-        try {
-            if (type.equals("egrul"))
-                importService.deleteFromSchedule(ModelTypes.EGRUL_LOAD);
-            else
-                importService.deleteFromSchedule(ModelTypes.EGRIP_LOAD);
-        } catch (Exception e) {
-//            log.error(e.getMessage(), e);
-            return "Не удалось задать расписание запуска ЕГРИПа";
-        }
-        return "Ok";
-    }
-
 
 }

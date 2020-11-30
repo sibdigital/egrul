@@ -73,4 +73,15 @@ create table if not exists reg_egrip_okved
             references okved,
     is_main bool default false,
     primary key(id_egrip, id_okved)
-)
+);
+
+CREATE TABLE if not exists cls_migration (
+     id serial not null
+         constraint cls_migration_pk
+             primary key,
+     type    smallint,
+     load_date timestamp,
+     filename varchar(255),
+     status smallint,
+     error text
+);
