@@ -46,6 +46,14 @@ public class ScheduleTasks {
         }
     }
 
+    public void addTaskToSchedulerAll(Date date) {
+        if (date.compareTo(new Date()) >= 0) {
+            Runnable task = new ImportRunnableTaskAll();
+            ScheduledFuture<?> scheduledTask = taskScheduler.schedule(task, date);
+            jobsMap.put(777, scheduledTask);
+        }
+    }
+
 
     class ImportRunnableTask implements Runnable {
 
@@ -65,6 +73,24 @@ public class ScheduleTasks {
             else if (type.getValue() == ModelTypes.EGRIP_LOAD.getValue()) {
                 importService.importEgrip(loadVersion);
             }
+        }
+    }
+
+    class ImportRunnableTaskAll implements Runnable {
+
+        public ImportRunnableTaskAll() {
+        }
+
+        @Override
+        public void run() {
+            // FULL
+            importService.importEgrul(0);
+            importService.importEgrip(0);
+
+            //Updates
+            importService.importEgrul(1);
+            importService.importEgrip(1);
+
         }
     }
 

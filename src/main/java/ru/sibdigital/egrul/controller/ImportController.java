@@ -32,6 +32,20 @@ public class ImportController {
         return "import";
     }
 
+
+    @GetMapping("/queue_up_all")
+    public @ResponseBody
+    String queueUpEgrul(@RequestParam("time") String time) {
+        try {
+            Date date = new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(time).getTime());
+            importService.addToScheduleAll(date);
+        } catch (Exception e) {
+//            log.error(e.getMessage(), e);
+            return "Не удалось задать расписание запуска";
+        }
+        return "Ok";
+    }
+
     @GetMapping("/queue_up_egrul")
     public @ResponseBody
     String queueUpEgrul(@RequestParam("loadVersion") Long loadVersion, @RequestParam("time") String time) {

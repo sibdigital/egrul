@@ -97,6 +97,11 @@ public class ImportServiceImpl implements ImportService {
         scheduleTasks.addTaskToScheduler(type, loadVersion, date);
     }
 
+    public void addToScheduleAll(Date date) {
+        scheduleTasks.addTaskToSchedulerAll(date);
+    }
+
+
     public void deleteFromSchedule(ModelTypes type) {
         scheduleTasks.removeTaskFromScheduler(type);
     }

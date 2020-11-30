@@ -8,6 +8,29 @@ function view_section(title) {
     }
 }
 
+function queueUpAll() {
+    webix.confirm('Вы действительно хотите поставить в расписание на запуск?')
+        .then(
+            function () {
+                var time = $$('DateId').getValue();
+                params = {time: time}
+                webix.ajax().get('/queue_up_all', params).then(function (data) {
+                    if (data.text() === 'Ok') {
+                        webix.message({
+                            text: 'Расписание запуска установлено',
+                            type: 'success'
+                        });
+                    } else {
+                        webix.message({
+                            text: 'Не удалось задать расписание запуска',
+                            type: 'error'
+                        });
+                    }
+                })
+            }
+        )
+}
+
 function queueUpEGRUL() {
     webix.confirm('Вы действительно хотите поставить в расписание на запуск?')
         .then(
@@ -107,6 +130,26 @@ webix.ready(function() {
        height: document.body.clientHeight,
        width: document.body.clientWidth - 8,
        rows: [
+           {
+               cols: [
+                   {
+                       view: "datepicker",
+                       id: 'DateId',
+                       width: 300,
+                       label: "Время",
+                       timepicker: true
+                   },
+                   {},
+                   {
+                       view: 'button',
+                       value: 'Начать загрузку всего',
+                       align: 'left',
+                       maxWidth: 300,
+                       css: 'webix_primary',
+                       click: queueUpAll
+                   }
+               ],
+           },
             {
                 id: 'formEGRUL',
                 view: 'form',
