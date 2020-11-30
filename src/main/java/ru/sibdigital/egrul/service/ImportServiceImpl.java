@@ -46,6 +46,9 @@ public class ImportServiceImpl implements ImportService {
     @Value("${egrip.import.directory}")
     private String egripPath;
 
+    @Value("${substringForFullFiles}")
+    private String substringForFullFiles;
+
     @Autowired
     private RegEgrulRepo regEgrulRepo;
 
@@ -142,7 +145,7 @@ public class ImportServiceImpl implements ImportService {
 
         // Загрузка ПОЛНОГО zip
         List<File> zipFullFiles = zipFiles.stream()
-                .filter(s -> s.getName().toLowerCase().contains("full"))
+                .filter(s -> s.getName().toLowerCase().contains(substringForFullFiles))
                 .collect(Collectors.toList());
 
         Collections.sort(zipFullFiles, compareByFileName);
@@ -154,7 +157,7 @@ public class ImportServiceImpl implements ImportService {
 
         // Загрузка ОБНОВЛЕНИЙ
         List<File> zipUpdateFiles = zipFiles.stream()
-                .filter(s -> ! s.getName().toLowerCase().contains("full"))
+                .filter(s -> ! s.getName().toLowerCase().contains(substringForFullFiles))
                 .collect(Collectors.toList());
 
         Collections.sort(zipUpdateFiles, compareByFileName);
@@ -309,7 +312,7 @@ public class ImportServiceImpl implements ImportService {
 
         // Загрузка ПОЛНОГО zip
         List<File> zipFullFiles = zipFiles.stream()
-                .filter(s -> s.getName().toLowerCase().contains("full"))
+                .filter(s -> s.getName().toLowerCase().contains(substringForFullFiles))
                 .collect(Collectors.toList());
 
         Collections.sort(zipFullFiles, compareByFileName);
@@ -317,7 +320,7 @@ public class ImportServiceImpl implements ImportService {
 
         // Загрузка ОБНОВЛЕНИЙ
         List<File> zipUpdateFiles = zipFiles.stream()
-                .filter(s -> ! s.getName().toLowerCase().contains("full"))
+                .filter(s -> ! s.getName().toLowerCase().contains(substringForFullFiles))
                 .collect(Collectors.toList());
 
         Collections.sort(zipUpdateFiles, compareByFileName);
